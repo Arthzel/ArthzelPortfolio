@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arthzel Lagata — Video Editor & Content Creator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --off-black: #111111;
+    --deep: #161616;
+    --surface: #1e1e1e;
+    --surface2: #252525;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --gold: #c8a96e;
+    --gold-light: #e2c98a;
+    --gold-dim: rgba(200,169,110,0.15);
+    --gold-glow: rgba(200,169,110,0.08);
+    --text: #f0ede8;
+    --text-muted: #888882;
+    --text-soft: #b8b5b0;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--black);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 8rem 3rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(200,169,110,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(200,169,110,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .hero-content { position: relative; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--gold);
+    display: inline-block;
+  }
+  .hero-name {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .hero-name span { color: var(--gold); }
+  .hero-title {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 300;
+    color: var(--text-soft);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+  }
+  .hero-desc {
+    max-width: 560px;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--black);
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-soft);
+    border: 0.5px solid var(--border2);
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .hero-stat-num {
+    font-family: var(--mono);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .hero-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  /* SECTIONS */
+  section { padding: 6rem 3rem; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 3rem;
+    line-height: 1.1;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .about-text { font-size: 1.05rem; color: var(--text-soft); line-height: 1.9; }
+  .about-text p + p { margin-top: 1.2rem; }
+  .about-text strong { color: var(--gold); font-weight: 500; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .skill-tag {
+    padding: 0.6rem 1rem;
+    border: 0.5px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    background: var(--surface);
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .skill-tag::before {
+    content: '';
+    width: 4px; height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .skill-tag:hover { border-color: var(--gold-light); color: var(--text); background: var(--gold-glow); }
+
+  .software-list {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+  }
+  .software-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .software-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .sw-pill {
+    padding: 0.3rem 0.75rem;
+    background: var(--gold-dim);
+    border: 0.5px solid rgba(200,169,110,0.25);
+    border-radius: 2px;
+    font-size: 0.75rem;
+    color: var(--gold-light);
+    font-family: var(--mono);
+  }
+
+  /* PORTFOLIO */
+  .portfolio-section { background: var(--off-black); }
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .portfolio-item {
+    position: relative;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .portfolio-item:hover { border-color: var(--gold); }
+  .portfolio-thumb {
+    width: 100%; height: 100%;
+    background: var(--deep);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .play-icon {
+    width: 44px; height: 44px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .play-icon svg { fill: var(--gold); width: 16px; height: 16px; margin-left: 3px; }
+  .portfolio-item:hover .play-icon {
+    background: var(--gold);
+  }
+  .portfolio-item:hover .play-icon svg { fill: var(--black); }
+  .portfolio-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+    padding: 1rem;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .portfolio-tag {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+  .portfolio-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* Featured big item */
+  .portfolio-item.featured {
+    grid-column: span 2;
+    aspect-ratio: 16/7;
+  }
+  .portfolio-item.featured .play-icon {
+    width: 60px; height: 60px;
+  }
+  .portfolio-item.featured .play-icon svg { width: 22px; height: 22px; }
+  .portfolio-item.featured .portfolio-title { font-size: 1rem; }
+
+  /* EXPERIENCE */
+  .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .exp-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    padding: 1.75rem;
+    transition: border-color 0.2s;
+  }
+  .exp-card:hover { border-color: var(--border2); }
+  .exp-year {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+  }
+  .exp-role {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .exp-org {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    padding: 0.3rem 0;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+  .exp-bullets li::before {
+    content: '—';
+    position: absolute; left: 0;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  /* AWARDS */
+  .awards-section { background: var(--off-black); }
+  .awards-strip {
+    display: flex; gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  .awards-strip::-webkit-scrollbar { display: none; }
+  .award-card {
+    flex: 0 0 260px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    padding: 1.5rem;
+  }
+  .award-icon {
+    width: 36px; height: 36px;
+    background: var(--gold-dim);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .award-icon svg { width: 18px; height: 18px; fill: var(--gold); }
+  .award-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+  .award-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* CONTACT */
+  .contact-section { border-top: 0.5px solid var(--border); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .contact-headline {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .contact-headline span { color: var(--gold); }
+  .contact-sub { margin-top: 1rem; font-size: 1rem; color: var(--text-muted); }
+  .contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 2px;
+    text-decoration: none;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { border-color: var(--gold); color: var(--gold); }
+  .contact-link-icon {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-width: 52px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-text {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+  .footer-copy { color: var(--text-muted); font-size: 0.75rem; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .hero { padding: 6rem 1.5rem 4rem; }
+    .about-grid, .exp-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .portfolio-grid { grid-template-columns: 1fr 1fr; }
+    .portfolio-item.featured { grid-column: span 2; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .portfolio-item.featured { grid-column: span 1; }
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Arthzel Lagata</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#awards">Awards</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Based in Philippines &bull; Available for Projects</div>
+    <h1 class="hero-name">Arthzel<br><span>Lagata</span></h1>
+    <p class="hero-title">Video Editor &bull; Content Creator &bull; Cinematographer</p>
+    <p class="hero-desc">
+      Crafting cinematic stories through intentional editing, precise color grading, and immersive sound design. From short films to social content — every frame is a decision.
+    </p>
+    <div class="hero-actions">
+      <a href="#work" class="btn btn-primary">View My Work</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+      <a href="https://www.youtube.com/@chelathomelive" target="_blank" class="btn btn-ghost">YouTube Channel ↗</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <span class="hero-stat-num">4+</span>
+        <span class="hero-stat-label">Years Experience</span>
+      </div>
+      <div>
+        <span class="hero-stat-num">18+</span>
+        <span class="hero-stat-label">Projects Showcased</span>
+      </div>
+      <div>
+        <span class="hero-stat-num">2×</span>
+        <span class="hero-stat-label">Festival Award Winner</span>
+      </div>
+      <div>
+        <span class="hero-stat-num">4</span>
+        <span class="hero-stat-label">Pro Software Tools</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <div class="section-label">About</div>
+        <h2 class="section-title">Storytelling<br>through the lens</h2>
+        <div class="about-text">
+          <p>I'm a <strong>Video Editor and Digital Content Creator</strong> from the Philippines, currently pursuing a Bachelor of Science in Information Technology at The Lewis College while building a growing body of creative work.</p>
+          <p>My craft spans cinematic short films, publication videos, gaming content, and social media — always anchored in the idea that <strong>good editing is invisible</strong>, and great editing transforms.</p>
+          <p>I work with clients and organizations to deliver polished, story-driven output across platforms — from festival-ready short films to high-retention social reels.</p>
+        </div>
+      </div>
+      <div>
+        <div class="skills-grid">
+          <div class="skill-tag">Cinematic Editing</div>
+          <div class="skill-tag">Motion Graphics</div>
+          <div class="skill-tag">Color Grading</div>
+          <div class="skill-tag">Sound Design</div>
+          <div class="skill-tag">Visual Storytelling</div>
+          <div class="skill-tag">Cinematography</div>
+          <div class="skill-tag">Audio Syncing</div>
+          <div class="skill-tag">Social Media Content</div>
+          <div class="skill-tag">Thumbnail Design</div>
+          <div class="skill-tag">Creative Transitions</div>
+        </div>
+        <div class="software-list">
+          <div class="software-label">Software Proficiency</div>
+          <div class="software-items">
+            <span class="sw-pill">Adobe Premiere Pro</span>
+            <span class="sw-pill">After Effects</span>
+            <span class="sw-pill">DaVinci Resolve</span>
+            <span class="sw-pill">CapCut</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="portfolio-section" id="work">
+  <div class="container">
+    <div class="section-label">Selected Work</div>
+    <h2 class="section-title">Recent Projects</h2>
+    <div class="portfolio-grid">
+
+      <!-- Featured: Halluc short film -->
+      <a class="portfolio-item featured" href="https://www.facebook.com/reel/1689459492058305" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Short Film &bull; Best Film Winner</div>
+          <div class="portfolio-title">Halluc — Award-Winning Short Film</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/2038309383756914" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Cinematic Reel</div>
+          <div class="portfolio-title">Cinematic Edit #2</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1460249489066824" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Event Coverage</div>
+          <div class="portfolio-title">Event Highlight Reel</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1350198316867032" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Story-Driven Edit</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/868923269383218" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Cinematic Reel</div>
+          <div class="portfolio-title">Cinematic Edit #5</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1221833439823662" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Social Content</div>
+          <div class="portfolio-title">Social Media Reel</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1199273028923000" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Motion & Transitions</div>
+          <div class="portfolio-title">Creative Transitions Edit</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/682021044929882" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Cinematic Edit #8</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/2232837193857306" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Cinematic Edit #9</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1446586973366828" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Social Content</div>
+          <div class="portfolio-title">Reel #10</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/698909106052278" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Edit Showcase #11</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/922529319943131" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Edit Showcase #12</div>
+        </div>
+      </a>
+
+      <!-- Featured: Lewisian Publication -->
+      <a class="portfolio-item featured" href="https://www.facebook.com/TheLewisianOnline/videos/557540380035781" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Student Publication &bull; The Lewisian</div>
+          <div class="portfolio-title">Official Publication Video — The Lewis College</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/372633745572311" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Reel #14</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1616465092452898" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Cinematic Reel</div>
+          <div class="portfolio-title">Cinematic Edit #15</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://www.facebook.com/reel/1698309800581342" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">Chel Visuals</div>
+          <div class="portfolio-title">Reel #16</div>
+        </div>
+      </a>
+
+      <!-- YouTube -->
+      <a class="portfolio-item" href="https://youtu.be/l675P3KFpWA?si=YlcWXk49yZ7tqMpZ" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">YouTube &bull; ChelAtHome</div>
+          <div class="portfolio-title">YouTube Video #1</div>
+        </div>
+      </a>
+
+      <a class="portfolio-item" href="https://youtu.be/ikNGfhK3MY4?si=423nTyyhpYRq3s2H" target="_blank" rel="noopener">
+        <div class="portfolio-thumb">
+          <div class="play-icon">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+        <div class="portfolio-overlay">
+          <div class="portfolio-tag">YouTube &bull; ChelAtHome</div>
+          <div class="portfolio-title">YouTube Video #2</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="section-label">Experience</div>
+    <h2 class="section-title">Where I've<br>done the work</h2>
+    <div class="exp-grid">
+      <div class="exp-card">
+        <div class="exp-year">2022 — Present</div>
+        <div class="exp-role">Freelance Video Editor</div>
+        <div class="exp-org">Self-Employed</div>
+        <ul class="exp-bullets">
+          <li>Edited short films, event highlights, and promotional videos for clients</li>
+          <li>Applied cinematic pacing, color grading, and motion graphics across projects</li>
+          <li>Collaborated with clients to deliver high-quality, on-brand output</li>
+          <li>Managed full post-production workflow from raw footage to final delivery</li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <div class="exp-year">2024 — Present</div>
+        <div class="exp-role">Video Editor</div>
+        <div class="exp-org">The Lewisian Student Publication — The Lewis College</div>
+        <ul class="exp-bullets">
+          <li>Produced official publication and event videos for the college</li>
+          <li>Created branded motion graphics and visual storytelling assets</li>
+          <li>Coordinated with the editorial team to meet publication deadlines</li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <div class="exp-year">2021 — Present</div>
+        <div class="exp-role">Content Creator</div>
+        <div class="exp-org">ChelAtHome — YouTube Channel</div>
+        <ul class="exp-bullets">
+          <li>Produced gaming and cinematic content for a growing YouTube audience</li>
+          <li>Designed thumbnails, motion text overlays, and creative transitions</li>
+          <li>Managed end-to-end content planning, shooting, and publishing workflow</li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <div class="exp-year">2023 — Present</div>
+        <div class="exp-role">Video Editor & Creator</div>
+        <div class="exp-org">Chel Visuals — Facebook Page</div>
+        <ul class="exp-bullets">
+          <li>Created school project videos, event coverage, and cinematic edits</li>
+          <li>Focused on visual storytelling, branding consistency, and transitions</li>
+          <li>Built a public portfolio of work through the platform</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AWARDS -->
+<section class="awards-section" id="awards">
+  <div class="container">
+    <div class="section-label">Recognition</div>
+    <h2 class="section-title">Awards &<br>Achievements</h2>
+    <div class="awards-strip">
+      <div class="award-card">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="award-title">Best Film — "Halluc"</div>
+        <div class="award-sub">Regional Film Festival Recognition</div>
+      </div>
+      <div class="award-card">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="award-title">2nd Place — Casiguran Film Festival</div>
+        <div class="award-sub">Short Film Competition</div>
+      </div>
+      <div class="award-card">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="award-title">2nd Place — Sorsogon NHS Film Festival</div>
+        <div class="award-sub">Student Film Competition</div>
+      </div>
+      <div class="award-card">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div class="award-title">Official Publication Editor</div>
+        <div class="award-sub">The Lewisian — The Lewis College</div>
+      </div>
+      <div class="award-card">
+        <div class="award-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="award-title">BSIT Student — The Lewis College</div>
+        <div class="award-sub">Currently Enrolled — Ongoing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <div class="section-label">Contact</div>
+        <h2 class="contact-headline">Let's make<br>something <span>great.</span></h2>
+        <p class="contact-sub">Open to freelance projects, collaborations, and creative opportunities. Based in Philippines — available remotely.</p>
+        <div style="margin-top: 2rem;">
+          <a href="tel:09615836194" class="btn btn-primary" style="margin-right: 0.75rem;">Call Now</a>
+          <a href="mailto:arthzellagata@gmail.com" class="btn btn-ghost">Send Email</a>
+        </div>
+      </div>
+      <div class="contact-links">
+        <a href="tel:09615836194" class="contact-link">
+          <span class="contact-link-icon">Phone</span>
+          <span>0961-583-6194</span>
+        </a>
+        <a href="mailto:arthzellagata@gmail.com" class="contact-link">
+          <span class="contact-link-icon">Email</span>
+          <span>arthzellagata@gmail.com</span>
+        </a>
+        <a href="https://www.facebook.com/arthzelbuenlagata" target="_blank" rel="noopener" class="contact-link">
+          <span class="contact-link-icon">Facebook</span>
+          <span>facebook.com/arthzelbuenlagata</span>
+        </a>
+        <a href="https://www.facebook.com/lagataarthzel" target="_blank" rel="noopener" class="contact-link">
+          <span class="contact-link-icon">Portfolio</span>
+          <span>Chel Visuals — Facebook Page</span>
+        </a>
+        <a href="https://www.youtube.com/@chelathomelive" target="_blank" rel="noopener" class="contact-link">
+          <span class="contact-link-icon">YouTube</span>
+          <span>ChelAtHome Channel</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-text">© 2025 Arthzel Lagata — Video Editor & Content Creator</span>
+  <span class="footer-copy">Philippines</span>
+</footer>
+
+</body>
+</html>
